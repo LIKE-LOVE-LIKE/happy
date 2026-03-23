@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
@@ -9,6 +9,7 @@
       margin: 0;
       padding: 0;
       box-sizing: border-box;
+      user-select: none; /* 避免触摸时选中文字，提升移动端体验 */
     }
 
     body {
@@ -63,7 +64,7 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      width: min(55vw, 55vh);  /* 从60缩小到55，更适中 */
+      width: min(55vw, 55vh);
       height: min(55vw, 55vh);
       display: flex;
       align-items: center;
@@ -80,23 +81,35 @@
       background-color: rgba(255, 200, 220, 0.15);
     }
 
-    /* 场景2 */
+    /* 场景2 - 调整字体大小：让整体更小巧，感叹号完整显示 */
     #scene2 {
       background-color: #ffc0cb;
       z-index: 5;
     }
 
     .big-message {
-      font-size: clamp(2rem, 12vw, 4.5rem); /* 调整文字大小范围 */
+      font-size: clamp(1.6rem, 8vw, 3.2rem);  /* 从 (2rem,12vw,4.5rem) 调小，确保感叹号完整 */
       color: #a5385b;
       text-shadow: 3px 3px 0 #ffb3c6, 6px 6px 20px rgba(255, 240, 245, 0.8);
       font-weight: 800;
-      letter-spacing: 4px;
+      letter-spacing: 2px;
       animation: softGlow 2s infinite alternate;
       text-align: center;
-      padding: 15px;
+      padding: 12px 20px;
       word-break: keep-all;
       max-width: 90vw;
+      white-space: nowrap;      /* 防止文字换行，保证感叹号不折行 */
+    }
+
+    /* 针对极小屏幕适配：如果宽度不够，允许缩小一点并保留感叹号 */
+    @media (max-width: 380px) {
+      .big-message {
+        font-size: 1.7rem;
+        letter-spacing: 1px;
+        white-space: normal;     /* 极端宽度下允许折行，但仍保证视觉完整 */
+        word-break: keep-all;
+        padding: 8px 12px;
+      }
     }
 
     @keyframes softGlow {
@@ -178,7 +191,7 @@
       top: -10px;
       left: -2px;
       width: calc(100% + 4px);
-      height: 25px;           /* 降低高度 */
+      height: 25px;
       background: linear-gradient(180deg, #fff9f0, #ffe0d0);
       border-radius: 70px 70px 40px 40px;
       box-shadow: 0 4px 6px rgba(210, 130, 120, 0.3);
@@ -325,6 +338,11 @@
       transform-origin: bottom;
     }
 
+    @keyframes flicker {
+      0% { opacity: 0.9; transform: scaleY(1); filter: blur(4px) drop-shadow(0 0 8px #ffae42);}
+      100% { opacity: 1; transform: scaleY(1.08); filter: blur(5px) drop-shadow(0 0 18px #ffcc66);}
+    }
+
     /* 糖粉 */
     .sugar-dust {
       position: absolute;
@@ -433,6 +451,10 @@
         right: 15px;
         padding: 5px 15px;
       }
+      .big-message {
+        font-size: 2.2rem;   /* 横屏下调小更舒适 */
+        white-space: nowrap;
+      }
     }
 
     /* 小屏手机 */
@@ -460,6 +482,15 @@
       }
     }
 
+    /* 确保场景2的文字在任何设备感叹号都显示完全，且足够精致 */
+    @media (max-width: 360px) {
+      .big-message {
+        font-size: 1.55rem;
+        letter-spacing: 0px;
+        padding: 6px 8px;
+      }
+    }
+
     /* 超大屏限制 */
     @media (min-height: 900px) {
       .cake-wrapper {
@@ -478,7 +509,7 @@
   </div>
 </div>
 
-<!-- 场景2：祝糖糖生日快乐 -->
+<!-- 场景2：祝糖糖生日快乐！ 字体已调小，感叹号完整可见 -->
 <div id="scene2" class="scene">
   <div class="big-message">祝糖糖生日快乐！</div>
 </div>
@@ -556,7 +587,7 @@
     }
     initCanvasSize();
 
-    const PETAL_COUNT = Math.floor((width * height) / 13000); // 稍微减少花瓣数量
+    const PETAL_COUNT = Math.floor((width * height) / 13000);
     const finalPetalCount = Math.min(45, Math.max(15, PETAL_COUNT));
 
     class Petal {
@@ -780,7 +811,6 @@
       const height_vh = window.innerHeight;
 
       if (height_vh < 600) {
-        // 小屏手机
         layers.forEach((layer, index) => {
           if (index === 0) layer.style.height = '80px';
           else if (index === 1) layer.style.height = '70px';
@@ -788,7 +818,6 @@
           else if (index === 3) layer.style.height = '55px';
         });
       } else if (height_vh < 800) {
-        // 中等屏幕
         layers.forEach((layer, index) => {
           if (index === 0) layer.style.height = '95px';
           else if (index === 1) layer.style.height = '82px';
@@ -796,7 +825,6 @@
           else if (index === 3) layer.style.height = '63px';
         });
       } else {
-        // 大屏
         layers.forEach((layer, index) => {
           if (index === 0) layer.style.height = '105px';
           else if (index === 1) layer.style.height = '90px';
